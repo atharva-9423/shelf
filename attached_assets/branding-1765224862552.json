@@ -1,0 +1,123 @@
+{
+  "colorScheme": "light",
+  "fonts": [
+    {
+      "family": "Geist",
+      "role": "body"
+    },
+    {
+      "family": "Arial",
+      "role": "body"
+    },
+    {
+      "family": "Segoe UI",
+      "role": "body"
+    },
+    {
+      "family": "Apple Color Emoji",
+      "role": "body"
+    },
+    {
+      "family": "Segoe UI Emoji",
+      "role": "body"
+    }
+  ],
+  "colors": {
+    "primary": "#0062D1",
+    "accent": "#FF0000",
+    "background": "#FAFAFA",
+    "textPrimary": "#171717",
+    "link": "#FF0000"
+  },
+  "typography": {
+    "fontFamilies": {
+      "primary": "Geist",
+      "heading": "Geist"
+    },
+    "fontStacks": {
+      "heading": [
+        "Geist",
+        "Arial",
+        "Apple Color Emoji",
+        "Segoe UI"
+      ],
+      "body": [
+        "Geist",
+        "Arial",
+        "Apple Color Emoji",
+        "Segoe UI"
+      ],
+      "paragraph": [
+        "Geist",
+        "Arial",
+        "Apple Color Emoji",
+        "Segoe UI"
+      ]
+    },
+    "fontSizes": {
+      "h1": "48px",
+      "h2": "14px",
+      "body": "16px"
+    }
+  },
+  "spacing": {
+    "baseUnit": 4,
+    "borderRadius": "8px"
+  },
+  "components": {
+    "input": {
+      "borderColor": "#CCCCCC",
+      "borderRadius": "8px"
+    },
+    "buttonPrimary": {
+      "background": "#171717",
+      "textColor": "#FFFFFF",
+      "borderRadius": "100px",
+      "shadow": "none"
+    },
+    "buttonSecondary": {
+      "background": "#FAFAFA",
+      "textColor": "#171717",
+      "borderRadius": "100px",
+      "shadow": "rgba(0, 0, 0, 0.08) 0px 0px 0px 1px, rgba(0, 0, 0, 0.04) 0px 2px 2px 0px, rgb(250, 250, 250) 0px 0px 0px 1px"
+    }
+  },
+  "images": {
+    "logo": "File saved at: attached_assets/logo.svg",
+    "favicon": "File saved at: attached_assets/favicon.ico",
+    "ogImage": "File saved at: attached_assets/ogImage.png"
+  },
+  "__framework_hints": [],
+  "__llm_logo_reasoning": {
+    "selectedIndex": 0,
+    "reasoning": "Logo #0 is the only one that visually represents the brand name 'Vercel' and is located in the header, linking to the homepage, making it the main brand logo.",
+    "confidence": 0.98
+  },
+  "__llm_button_reasoning": {
+    "primary": {
+      "index": 1,
+      "text": "DeployStart Deploying",
+      "reasoning": "Button #1 ('DeployStart Deploying') has a dark background color (#171717) and uses action-oriented text, making it a strong candidate for the primary CTA. It also has a class indicating it is a primary button, which aligns with the criteria for a primary call-to-action."
+    },
+    "secondary": {
+      "index": 2,
+      "text": "Get an Enterprise TrialGet an Enterprise Trial",
+      "reasoning": "Button #2 ('Get an Enterprise Trial') has a light background color (#FAFAFA), which is distinctly different from the primary button's dark color. It is less prominent and serves as a secondary action, making it a suitable choice for the secondary button."
+    },
+    "confidence": 0.95
+  },
+  "personality": {
+    "tone": "modern",
+    "energy": "medium",
+    "targetAudience": "developers and tech professionals"
+  },
+  "designSystem": {
+    "framework": "tailwind",
+    "componentLibrary": "geist"
+  },
+  "confidence": {
+    "buttons": 0.95,
+    "colors": 0.9,
+    "overall": 0.925
+  }
+}

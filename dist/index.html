@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shelf</title>
+    <link rel="icon" href="attached_assets/favicon.ico" type="image/x-icon" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet" />
+    <script type="module" crossorigin src="/assets/index-DJAnlj0Q.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-R4fhIGNu.css">
+  </head>
+  <body>
+    <div id="app">
+      <section id="home-view" class="view active">
+        <div class="home-container">
+          <header class="home-header">
+            <div class="profile-avatar" onclick="showAdmin()">
+              <img
+                src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=80&h=80&fit=crop&crop=face"
+                alt="Profile"
+              />
+            </div>
+            <button class="search-btn">
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <circle cx="11" cy="11" r="8"></circle>
+                <path d="m21 21-4.35-4.35"></path>
+              </svg>
+              Search
+            </button>
+            <button class="icon-btn notification-btn">
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+              </svg>
+            </button>
+          </header>
+
+          <section class="greeting-section">
+            <h1>Good morning</h1>
+            <p>We have some fantastic books<br />for you.</p>
+          </section>
+
+          <section class="books-carousel-section">
+            <div id="books-carousel" class="books-carousel"></div>
+            <div id="home-empty" class="home-empty">
+              <p>No books yet. Add some from admin.</p>
+            </div>
+          </section>
+
+          <section
+            id="continue-reading-section"
+            class="continue-reading-section hidden"
+          >
+            <h2>Continue Reading</h2>
+            <div id="continue-reading-card" class="continue-reading-card"></div>
+          </section>
+        </div>
+      </section>
+
+      <nav class="bottom-nav" id="bottom-nav">
+        <div class="nav-indicator" id="nav-indicator"></div>
+        <button class="nav-item" onclick="showLibrary()" id="nav-library">
+          <i class="fa-solid fa-fire-flame-curved" style="font-size: 20px;"></i>
+        </button>
+        <button class="nav-item active" onclick="showHome()" id="nav-home">
+          <i class="fa-solid fa-house" style="font-size: 20px;"></i>
+        </button>
+        <button class="nav-item" onclick="showAdmin()" id="nav-admin">
+          <i class="fa-solid fa-bookmark" style="font-size: 20px;"></i>
+        </button>
+      </nav>
+
+      <section id="library-view" class="view">
+        <div class="page-container">
+          <header class="page-header-bar">
+            <button class="back-btn" onclick="showHome()">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M19 12H5M12 19l-7-7 7-7"></path>
+              </svg>
+            </button>
+            <h1>Library</h1>
+            <div style="width: 40px"></div>
+          </header>
+          <div class="library-grid" id="library-grid"></div>
+          <div id="library-empty" class="page-empty">
+            <p>No books available yet.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="admin-view" class="view">
+        <div class="page-container">
+          <header class="page-header-bar">
+            <button class="back-btn" onclick="showHome()">
+              <svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+              >
+                <path d="M19 12H5M12 19l-7-7 7-7"></path>
+              </svg>
+            </button>
+            <h1>Admin</h1>
+            <div style="width: 40px"></div>
+          </header>
+
+          <div id="admin-login" class="admin-login-panel">
+            <div class="login-card">
+              <h2>Admin Access</h2>
+              <p>Sign in to manage your library</p>
+              <form id="login-form" onsubmit="handleLogin(event)">
+                <div class="form-group">
+                  <label for="username">Username</label>
+                  <input
+                    type="text"
+                    id="username"
+                    placeholder="Enter username"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="password">Password</label>
+                  <input
+                    type="password"
+                    id="password"
+                    placeholder="Enter password"
+                    required
+                  />
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">
+                  Sign In
+                </button>
+              </form>
+              <p id="login-error" class="error-text"></p>
+            </div>
+          </div>
+
+          <div id="admin-panel" class="admin-content hidden">
+            <div class="admin-header-row">
+              <h2>Manage Library</h2>
+              <button class="btn btn-secondary btn-sm" onclick="handleLogout()">
+                Sign Out
+              </button>
+            </div>
+
+            <div class="upload-card">
+              <h3>Upload New Book</h3>
+              <form id="upload-form" onsubmit="handleUpload(event)">
+                <div class="form-group">
+                  <label for="book-title">Title</label>
+                  <input
+                    type="text"
+                    id="book-title"
+                    placeholder="Book title"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="book-author">Author</label>
+                  <input
+                    type="text"
+                    id="book-author"
+                    placeholder="Author name"
+                    required
+                  />
+                </div>
+                <div class="form-group">
+                  <label for="book-description">Description</label>
+                  <textarea
+                    id="book-description"
+                    placeholder="Brief description"
+                    rows="3"
+                  ></textarea>
+                </div>
+                <div class="form-group">
+                  <label for="book-cover">Cover Image</label>
+                  <input type="file" id="book-cover" accept="image/*" />
+                </div>
+                <div class="form-group">
+                  <label for="book-file">Book File (PDF/EPUB)</label>
+                  <input
+                    type="file"
+                    id="book-file"
+                    accept=".pdf,.epub,application/pdf,application/epub+zip"
+                    required
+                  />
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">
+                  Upload Book
+                </button>
+              </form>
+            </div>
+
+            <div class="manage-card">
+              <h3>Your Books</h3>
+              <div id="admin-books-list" class="admin-books-list"></div>
+              <div id="admin-empty-state" class="admin-empty">
+                <p>No books uploaded yet.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="reader-view" class="view">
+        <header class="reader-header">
+          <button class="back-btn" onclick="closeReader()">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M19 12H5M12 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+          <span id="reader-title" class="reader-title"></span>
+          <div style="width: 40px"></div>
+        </header>
+        <div id="reader-container" class="reader-container">
+          <iframe id="book-iframe" class="book-iframe"></iframe>
+        </div>
+      </section>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+  </body>
+</html>

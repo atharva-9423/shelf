@@ -1,0 +1,403 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Shelf</title>
+    <link rel="icon" href="attached_assets/favicon.ico" type="image/x-icon" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <div id="app">
+      <section id="auth-gate-view" class="view active">
+        <div class="auth-container">
+          <div class="auth-card">
+            <div class="auth-logo">
+              <img src="attached_assets/shelf-logo.png" alt="Shelf" />
+            </div>
+            <h1>Welcome to Shelf</h1>
+            <p class="auth-subtitle">Please register to access the library</p>
+            
+            <div id="auth-pending-message" class="auth-pending-message hidden">
+              <div class="pending-icon">
+                <i class="fa-solid fa-clock"></i>
+              </div>
+              <h3>Pending Approval</h3>
+              <p>Your registration is pending approval from the admin. Please wait for verification.</p>
+            </div>
+            
+            <form id="auth-register-form" class="auth-form" onsubmit="handleUserRegistration(event)">
+              <div class="form-group">
+                <label for="user-name">Full Name</label>
+                <input type="text" id="user-name" placeholder="Enter your full name" required />
+              </div>
+              <div class="form-group">
+                <label for="user-div">Division</label>
+                <input type="text" id="user-div" placeholder="e.g., A, B, C" required />
+              </div>
+              <div class="form-group">
+                <label for="user-branch">Branch</label>
+                <select id="user-branch" required>
+                  <option value="">Select Branch</option>
+                  <option value="Computer Engineering">Computer Engineering</option>
+                  <option value="Electronics Engineering">Electronics Engineering</option>
+                  <option value="Mechanical Engineering">Mechanical Engineering</option>
+                  <option value="Civil Engineering">Civil Engineering</option>
+                  <option value="IT Engineering">IT Engineering</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="user-year">Year</label>
+                <select id="user-year" required>
+                  <option value="">Select Year</option>
+                  <option value="1st Year">1st Year</option>
+                  <option value="2nd Year">2nd Year</option>
+                  <option value="3rd Year">3rd Year</option>
+                  <option value="4th Year">4th Year</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="user-idcard">ID Card Photo</label>
+                <input type="file" id="user-idcard" accept="image/*" required />
+                <p class="form-hint">Upload a clear photo of your ID card</p>
+              </div>
+              <button type="submit" class="btn btn-primary btn-full" id="auth-submit-btn">
+                <span>Submit Registration</span>
+              </button>
+            </form>
+            <p id="auth-error" class="error-text"></p>
+          </div>
+        </div>
+      </section>
+
+      <header class="global-header hidden" id="global-header">
+        <button
+          class="header-back-btn"
+          id="header-back-btn"
+          onclick="closeBookDetail()"
+        >
+          <svg
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M19 12H5M12 19l-7-7 7-7"></path>
+          </svg>
+        </button>
+        <div class="header-logo" id="header-logo-app">
+          <img src="attached_assets/shelf-logo.png" alt="Shelf" />
+        </div>
+        <div
+          class="header-logo hidden"
+          id="header-logo-bookmarks"
+        >
+          <img src="attached_assets/bookmarks-logo.png" alt="Bookmarks" />
+        </div>
+        <div
+          class="header-logo hidden"
+          id="header-logo-library"
+        >
+          <img src="library-logo.png" alt="Library" />
+        </div>
+        <button class="search-btn" onclick="openSearch()">
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="11" cy="11" r="8"></circle>
+            <path d="m21 21-4.35-4.35"></path>
+          </svg>
+          Search
+        </button>
+        <button class="icon-btn notification-btn">
+          <i class="fa-solid fa-bell"></i>
+        </button>
+      </header>
+
+      <section id="home-view" class="view">
+        <div class="home-container">
+          <section class="greeting-section">
+            <h1 id="greeting-text">Good morning</h1>
+            <p>We have some fantastic books<br />for you.</p>
+          </section>
+
+          <section class="books-carousel-section">
+            <div id="books-carousel" class="books-carousel"></div>
+            <div id="home-empty" class="home-empty">
+              <p>No books yet. Add some from admin.</p>
+            </div>
+          </section>
+
+          <section
+            id="continue-reading-section"
+            class="continue-reading-section hidden"
+          >
+            <h2>Continue Reading</h2>
+            <div id="continue-reading-card" class="continue-reading-card"></div>
+          </section>
+        </div>
+      </section>
+
+      <nav class="bottom-nav hidden" id="bottom-nav">
+        <div class="nav-indicator" id="nav-indicator"></div>
+        <button class="nav-item" onclick="showLibrary()" id="nav-library">
+          <i class="fa-solid fa-fire-flame-curved" style="font-size: 20px"></i>
+        </button>
+        <button class="nav-item active" onclick="showHome()" id="nav-home">
+          <i class="fa-solid fa-house" style="font-size: 20px"></i>
+        </button>
+        <button class="nav-item" onclick="showBookmarks()" id="nav-bookmark">
+          <i class="fa-solid fa-bookmark" style="font-size: 20px"></i>
+        </button>
+      </nav>
+
+      <button
+        class="bottom-read-btn"
+        id="bottom-read-btn"
+        onclick="startReading()"
+      >
+        <i class="fa-solid fa-book-open"></i>
+        <span>Read Now</span>
+      </button>
+
+      <section id="library-view" class="view">
+        <div class="page-container">
+          <div class="library-grid" id="library-grid"></div>
+          <div id="library-empty" class="page-empty">
+            <p>No books available yet.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="bookmarks-view" class="view">
+        <div class="page-container">
+          <div class="library-grid" id="bookmarks-grid"></div>
+          <div id="bookmarks-empty" class="page-empty">
+            <i
+              class="fa-solid fa-bookmark"
+              style="
+                font-size: 48px;
+                color: var(--text-muted);
+                margin-bottom: 16px;
+              "
+            ></i>
+            <p>No bookmarks yet.</p>
+            <p
+              style="
+                font-size: 13px;
+                color: var(--text-secondary);
+                margin-top: 8px;
+              "
+            >
+              Add books to your bookmarks to see them here.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="book-detail-view" class="view">
+        <div class="book-detail-container">
+          <div class="detail-carousel-section">
+            <div id="detail-books-carousel" class="detail-books-carousel"></div>
+          </div>
+
+          <div class="detail-info">
+            <h2 id="detail-author" class="detail-author"></h2>
+          </div>
+
+          <div class="detail-stats">
+            <div class="stat-item">
+              <span class="stat-value" id="detail-language">ENG</span>
+              <span class="stat-label">LANGUAGE</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value" id="detail-pages">--</span>
+              <span class="stat-label">PAGES</span>
+            </div>
+            <button
+              id="detail-bookmark-btn"
+              class="stat-bookmark-btn"
+              onclick="toggleBookmark()"
+              title="Add to bookmarks"
+            >
+              <i class="fa-regular fa-bookmark"></i>
+            </button>
+          </div>
+
+          <div class="detail-overview">
+            <h3>Overview</h3>
+            <p id="detail-description"></p>
+          </div>
+        </div>
+      </section>
+
+      <section id="reader-view" class="view">
+        <header class="reader-header">
+          <button class="back-btn" onclick="closeReader()">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+            >
+              <path d="M19 12H5M12 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+          <span id="reader-title" class="reader-title"></span>
+          <button
+            id="pdf-reset-btn"
+            class="pdf-reset-btn"
+            onclick="resetPdfView()"
+          >
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </button>
+        </header>
+        <div id="reader-container" class="reader-container">
+          <div id="pdf-viewer" class="pdf-viewer">
+            <div class="pdf-canvas-wrapper">
+              <canvas id="pdf-canvas"></canvas>
+            </div>
+          </div>
+          <div id="pdf-controls" class="pdf-controls">
+            <button class="pdf-nav-btn" onclick="prevPage()">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <div class="pdf-page-container">
+              <span
+                id="pdf-page-info"
+                class="pdf-page-info"
+                onclick="showPageInput()"
+                >1 / 1</span
+              >
+              <span class="pdf-page-hint">Tap to jump</span>
+              <div id="pdf-page-input-wrap" class="pdf-page-input-wrap hidden">
+                <input
+                  type="number"
+                  id="pdf-page-input"
+                  class="pdf-page-input"
+                  min="1"
+                  onkeydown="handlePageInputKey(event)"
+                />
+                <span class="pdf-page-total"
+                  >/ <span id="pdf-total-display">1</span></span
+                >
+              </div>
+            </div>
+            <button class="pdf-nav-btn" onclick="nextPage()">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+          <iframe id="book-iframe" class="book-iframe"></iframe>
+        </div>
+      </section>
+
+      <section id="desktop-block-view" class="view">
+        <div class="desktop-block-container">
+          <div class="desktop-block-content">
+            <div class="desktop-block-icon">📱</div>
+            <h1>Mobile Only</h1>
+            <p>This app is optimized for mobile devices.</p>
+            <p class="desktop-block-message">
+              Please open this app on your mobile phone or download the app from
+              your device's app store.
+            </p>
+            <div class="desktop-block-divider"></div>
+            <p class="desktop-block-footer">
+              For the best experience, use a mobile device.
+            </p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <div id="continue-menu-modal" class="menu-modal hidden">
+      <div class="menu-content">
+        <button class="menu-option" onclick="hideBookFromContinue()">
+          <i class="fa-solid fa-eye-slash"></i>
+          <span>Hide from Continue Reading</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="search-modal" class="search-modal">
+      <div class="search-modal-content">
+        <div class="search-header">
+          <input
+            type="text"
+            id="search-input"
+            class="search-input"
+            placeholder="Search books..."
+            autofocus
+          />
+          <button class="search-close-btn" onclick="closeSearch()">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+        <div id="search-results" class="search-results"></div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+      import {
+        getDatabase,
+        ref,
+        push,
+        set,
+        onValue,
+        remove,
+        get,
+        update,
+      } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyDLnZu7F42nu1UnqHkyWzClB5AX25Jds0o",
+        authDomain: "e-book-4f4f8.firebaseapp.com",
+        databaseURL:
+          "https://e-book-4f4f8-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "e-book-4f4f8",
+        storageBucket: "e-book-4f4f8.firebasestorage.app",
+        messagingSenderId: "1052383218826",
+        appId: "1:1052383218826:web:7c2e30520bf58177773173",
+        measurementId: "G-5X14495FLX",
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const database = getDatabase(app);
+
+      window.firebaseDB = database;
+      window.firebaseRef = ref;
+      window.firebasePush = push;
+      window.firebaseSet = set;
+      window.firebaseOnValue = onValue;
+      window.firebaseRemove = remove;
+      window.firebaseGet = get;
+      window.firebaseUpdate = update;
+    </script>
+    <script type="module" src="script.js"></script>
+  </body>
+</html>
