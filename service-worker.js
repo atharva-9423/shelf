@@ -1,4 +1,4 @@
-const CACHE_NAME = 'shelf-cache-v2';
+const CACHE_NAME = 'shelf-cache-v3';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -17,7 +17,7 @@ const ASSETS_TO_CACHE = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
-      console.log('SW: Pre-caching assets');
+      console.log('SW: Pre-caching assets for WebView');
       return cache.addAll(ASSETS_TO_CACHE);
     })
   );
@@ -30,7 +30,6 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
-            console.log('SW: Removing old cache', cacheName);
             return caches.delete(cacheName);
           }
         })
@@ -41,7 +40,16 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Always try cache first for speed and offline reliability
+  // WebView Compatibility: Always handle navigation requests with network-first fallback to cache
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() => {
+        return caches.match('/');
+      })
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
@@ -49,19 +57,13 @@ self.addEventListener('fetch', (event) => {
       }
 
       return fetch(event.request).then((networkResponse) => {
-        // Cache successful requests for future offline use
-        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+        if (networkResponse && networkResponse.status === 200) {
           const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, responseToCache);
           });
         }
         return networkResponse;
-      }).catch(() => {
-        // Offline fallback for index.html
-        if (event.request.mode === 'navigate') {
-          return caches.match('/');
-        }
       });
     })
   );
