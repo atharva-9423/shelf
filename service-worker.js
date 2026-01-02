@@ -40,22 +40,15 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  const url = new URL(event.request.url);
+
   // Ignore Firebase and external API calls for cache-first strategy
   // as they should be handled by script.js's internal caching (IndexedDB/localStorage)
-  if (event.request.url.includes('firebase') || event.request.url.includes('googleapis')) {
+  if (url.hostname.includes('firebase') || url.hostname.includes('googleapis')) {
     return;
   }
 
-  // WebView Compatibility: Always handle navigation requests with network-first fallback to cache
-  if (event.request.mode === 'navigate') {
-    event.respondWith(
-      fetch(event.request).catch(() => {
-        return caches.match('/');
-      })
-    );
-    return;
-  }
-
+  // WebView Compatibility: Cache-first strategy for main assets
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
       if (cachedResponse) {
@@ -63,13 +56,19 @@ self.addEventListener('fetch', (event) => {
       }
 
       return fetch(event.request).then((networkResponse) => {
-        if (networkResponse && networkResponse.status === 200) {
+        // Cache new assets on the fly
+        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
           const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
             cache.put(event.request, responseToCache);
           });
         }
         return networkResponse;
+      }).catch(() => {
+        // Fallback to index.html for navigation if offline
+        if (event.request.mode === 'navigate') {
+          return caches.match('/');
+        }
       });
     })
   );
