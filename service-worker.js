@@ -40,6 +40,12 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
+  // Ignore Firebase and external API calls for cache-first strategy
+  // as they should be handled by script.js's internal caching (IndexedDB/localStorage)
+  if (event.request.url.includes('firebase') || event.request.url.includes('googleapis')) {
+    return;
+  }
+
   // WebView Compatibility: Always handle navigation requests with network-first fallback to cache
   if (event.request.mode === 'navigate') {
     event.respondWith(
