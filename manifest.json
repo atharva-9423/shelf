@@ -9,12 +9,12 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "attached_assets/generated_images/app_icon_192x192_logo.png",
+      "src": "app_icon_192x192_logo.png",
       "sizes": "192x192",
       "type": "image/png"
     },
     {
-      "src": "attached_assets/generated_images/app_icon_512x512_logo.png",
+      "src": "app_icon_512x512_logo.png",
       "sizes": "512x512",
       "type": "image/png"
     }
