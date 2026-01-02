@@ -34,29 +34,38 @@ self.addEventListener('activate', (event) => {
           }
         })
       );
+    }).then(() => {
+      return self.clients.claim();
     })
   );
-  self.clients.claim();
 });
 
 self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url);
+  // Try to handle all requests with cache-first, but be extra aggressive with navigation
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      caches.match('/').then((cachedResponse) => {
+        // Return cached index.html immediately if it exists
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+        // Otherwise try network and catch errors
+        return fetch(event.request).catch(() => {
+          return caches.match('/');
+        });
+      })
+    );
+    return;
+  }
 
-  // Ignore Firebase and external API calls for cache-first strategy
-  // as they should be handled by script.js's internal caching (IndexedDB/localStorage)
+  const url = new URL(event.request.url);
   if (url.hostname.includes('firebase') || url.hostname.includes('googleapis')) {
     return;
   }
 
-  // WebView Compatibility: Cache-first strategy for main assets
   event.respondWith(
     caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-
-      return fetch(event.request).then((networkResponse) => {
-        // Cache new assets on the fly
+      return cachedResponse || fetch(event.request).then((networkResponse) => {
         if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
           const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
@@ -64,11 +73,6 @@ self.addEventListener('fetch', (event) => {
           });
         }
         return networkResponse;
-      }).catch(() => {
-        // Fallback to index.html for navigation if offline
-        if (event.request.mode === 'navigate') {
-          return caches.match('/');
-        }
       });
     })
   );
