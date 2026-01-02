@@ -1,4 +1,4 @@
-const CACHE_NAME = 'shelf-cache-v1';
+const CACHE_NAME = 'shelf-cache-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -17,6 +17,7 @@ const ASSETS_TO_CACHE = [
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME).then((cache) => {
+      console.log('SW: Pre-caching assets');
       return cache.addAll(ASSETS_TO_CACHE);
     })
   );
@@ -29,6 +30,7 @@ self.addEventListener('activate', (event) => {
       return Promise.all(
         cacheNames.map((cacheName) => {
           if (cacheName !== CACHE_NAME) {
+            console.log('SW: Removing old cache', cacheName);
             return caches.delete(cacheName);
           }
         })
@@ -39,25 +41,27 @@ self.addEventListener('activate', (event) => {
 });
 
 self.addEventListener('fetch', (event) => {
-  // Skip cross-origin requests for Firebase (they should handle their own caching/offline)
-  if (!event.request.url.startsWith(self.location.origin) && !event.request.url.includes('googleapis') && !event.request.url.includes('gstatic') && !event.request.url.includes('cdnjs')) {
-    return;
-  }
-
+  // Always try cache first for speed and offline reliability
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      if (response) {
-        return response;
+    caches.match(event.request).then((cachedResponse) => {
+      if (cachedResponse) {
+        return cachedResponse;
       }
+
       return fetch(event.request).then((networkResponse) => {
-        if (!networkResponse || networkResponse.status !== 200 || networkResponse.type !== 'basic') {
-          return networkResponse;
+        // Cache successful requests for future offline use
+        if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => {
+            cache.put(event.request, responseToCache);
+          });
         }
-        const responseToCache = networkResponse.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
-        });
         return networkResponse;
+      }).catch(() => {
+        // Offline fallback for index.html
+        if (event.request.mode === 'navigate') {
+          return caches.match('/');
+        }
       });
     })
   );
