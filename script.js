@@ -978,6 +978,15 @@ window.addEventListener('load', () => {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/service-worker.js', { scope: '/' }).then((registration) => {
       console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      // Force the page to reload when a new service worker takes over
+      registration.onupdatefound = () => {
+        const installingWorker = registration.installing;
+        installingWorker.onstatechange = () => {
+          if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            window.location.reload();
+          }
+        };
+      };
     }).catch((err) => {
       console.log('ServiceWorker registration failed: ', err);
     });
