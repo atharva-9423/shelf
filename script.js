@@ -982,6 +982,17 @@ window.addEventListener('load', () => {
       console.log('ServiceWorker registration failed: ', err);
     });
   }
+
+  // Network status detection for WebView
+  window.addEventListener('online', () => {
+    showToast('App is back online');
+    document.body.classList.remove('is-offline');
+  });
+  window.addEventListener('offline', () => {
+    showToast('Working offline');
+    document.body.classList.add('is-offline');
+  });
+  if (!navigator.onLine) document.body.classList.add('is-offline');
   // Disable right-click
   document.addEventListener('contextmenu', e => e.preventDefault());
   
